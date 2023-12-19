@@ -10,15 +10,15 @@
 #define DATA_OUTPUT 1  
 #define DAT_PATH "heat-dat-files"
 
-#define IMAX 10
-#define JMAX 10
+#define IMAX 400
+#define JMAX 400
 
 /* Domain definition */ 
 #define TR 50.0   
 #define TL 100.0
 
 /* Computation parameters */
-#define NMAX 1e10
+#define NMAX 1e6
 #define NREP 1       
 
 

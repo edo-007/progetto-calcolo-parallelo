@@ -83,23 +83,28 @@ int main(int argc, char *argv[]) {
         /* Initial condition definition */ 
         initConditions(Tn,x,xD);
         clock_gettime(CLOCK_REALTIME, &time_start);
-
-
+    
+/* You can't terminate a parallel construct prematurely. OpenMP has no construct for this and it specifies
+ * that parallel regions may have only one exit point (so no branching out of the region...)
+ */
 #ifdef _USE_OMP
-    #pragma omp parallel private(i, j, Te) shared(time)
+    printf("   - canc : %d\n", omp_get_cancellation());
+    #pragma omp parallel private(i,j,Te_point )
     {
-        // #pragma omp single 
-        // {
-        //     printf("   - number th : %d\n", omp_get_num_threads());
-        //     printf("   - max th : %d\n\n", omp_get_max_threads());
-        // }
+        #pragma omp single
+        {
+            printf("   - avaiable threads : %d\n", omp_get_max_threads());
+            printf("   - active threads   : %d\n\n", omp_get_num_threads());
+        }
+
 #endif
         /* COMPUTATION */
-        for (n = 0; n < NMAX; n++) {                // nnnnnnnnnnnnnnnnnnnnnnnnnnnnn
-            if (time >= tend) {
-                printf("%f\n", time);
-                break;
+        for (n = 0; n < NMAX; n++) {
+
+            if (time >= tend){
+                #pragma omp cancel parallel
             }
+                
 #ifdef _USE_OMP
     #pragma omp single 
     {
@@ -128,6 +133,7 @@ int main(int argc, char *argv[]) {
 #endif
             for (i = 1; i < IMAX - 1; i++) {
 
+                /* computing exact solution for boundaries */ 
                 Te_point = ( (TR + TL) / 2.0)  +  ( erf((x[i] - 1) / (2 * sqrt(kappa * time))) * (TR - TL) / 2.0 );
                 
                 Tn1[i][0] = Te_point;
@@ -139,12 +145,11 @@ int main(int argc, char *argv[]) {
                                 + ((kappa * dt / dx2) * ( Tn[i + 1][j]  - 2.0 * Tn[i][j] + Tn[i - 1][j]))
                                 + ((kappa * dt / dy2) * ( Tn[i][j + 1]  - 2.0 * Tn[i][j] + Tn[i][j - 1]));
                 }
-                 /* computing exact solution for boundaries */ 
+                 
             }
 
 #ifdef _USE_OMP
     #pragma omp barrier
-    /* Overwrite */
     #pragma omp for
 #endif
             for (i = 1; i < IMAX - 1; i++) {
@@ -176,7 +181,6 @@ int main(int argc, char *argv[]) {
 #endif
         }   /* ==== end for (n) ==== */
 #ifdef _USE_OMP
-        printf("thread %d\n", omp_get_thread_num());
     }
     /* End omp parallel*/
 #endif
@@ -186,7 +190,7 @@ int main(int argc, char *argv[]) {
     
     } /* ==== end for (rep) ==== */
 
-    puts("  ====================");
+    puts(" ==================== ");
 
 
     /* Output */

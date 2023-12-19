@@ -2,12 +2,12 @@
 /* 
     ^
     | __________________  
-    |[_______50_________] 
+    |[ |              | ] 
+    |[ |     50       | ]
+    |[e|______________|e]
     |[ |              | ]
-    |[e|              |e]
-    |[ |              | ]
-    |[_|______________| ]
-  __|[_______100________]____>
+    |[_|     100      | ]
+  __|[_|_____ ________|_]__>
     |
  */
 int main(int argc, char *argv[]) {
@@ -102,7 +102,6 @@ int main(int argc, char *argv[]) {
                 dt = tio - time;
             }
 # endif
-            time = time + dt;     // updating time
 
             /* Schema ESPLICITO */
             for (i = 1; i < IMAX - 1; i++) {
@@ -118,7 +117,8 @@ int main(int argc, char *argv[]) {
 
                 Tn1[i][0] = Te_point;
                 Tn1[i][JMAX - 1] = Te_point;
-            }
+            }      
+            time = time + dt;     // updating time
 
             /* Overwrite last solution */
             for (i = 1; i < IMAX - 1; i++) {
