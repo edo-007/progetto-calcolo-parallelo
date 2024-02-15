@@ -1,25 +1,40 @@
-
-FLAGS = -lm 
+# -march=native -mtune=native -Ofast -funroll-loops 
+FLAGS = 
 DIR = heat-dat-files
+
+# default serial
+CC=gcc
+TYPE=serial
+
+# Ricorda: carica il modulo [devtoolset-10], nella versione gcc 4.* #pragma omp
+# cancel non è supportata
+ifeq ($(type), omp) 
+	TYPE=omp
+	FLAGS += -fopenmp -D_USE_OMP=1
+endif
+ifeq ($(type), mpi)
+	TYPE=mpi
+	CC=mpicc
+endif
 
 ifeq ($(out), y)
 	FLAGS += -D_OUTPUT=1
 endif
 
-ifeq ($(parflags), y)
-	FLAGS += -fopenmp -D_USE_OMP=1
-endif
-
-
-serial:
-	gcc -c -g utils.c
-	gcc -c -g heat2D.c $(FLAGS)
-	gcc -g -o heat2D utils.o heat2D.o $(FLAGS)
-
-parallel:
-	gcc -c -g utils.c $(FLAGS)
-	gcc -c -g heat2D-parallel.c $(FLAGS)
-	gcc -g -o heat2D-parallel utils.o heat2D-parallel.o $(FLAGS)
+all:
+	export OMP_CANCELLATION=true
+	$(CC) -c -g utils.c -lm
+	$(CC) -c -g heat2D-$(TYPE).c $(FLAGS) -lm
+	$(CC) -g -o heat2D-$(TYPE) utils.o heat2D-$(TYPE).o $(FLAGS) -lm
 
 clear:
-	rm ./heat-dat-files/Heat*.dat;\
+	rm ./heat-dat-files/Heat*.dat
+
+clear-dir:
+	rm ./out/test*
+	rm ./err/test*
+
+# load-module:
+#  	module load devtoolset-10
+#  	module load cuda/10.2
+#  	module load openmpi

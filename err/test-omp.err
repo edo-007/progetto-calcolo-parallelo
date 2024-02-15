@@ -1,0 +1,7 @@
+heat2D-omp.c: In function ‘main’:
+heat2D-omp.c:20:16: warning: variable ‘dtio’ set but not used [-Wunused-but-set-variable]
+   20 |     float tio, dtio;                                //output time step
+      |                ^~~~
+heat2D-omp.c:20:11: warning: variable ‘tio’ set but not used [-Wunused-but-set-variable]
+   20 |     float tio, dtio;                                //output time step
+      |           ^~~

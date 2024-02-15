@@ -1,0 +1,16 @@
+export OMP_CANCELLATION=true
+gcc -c -g utils.c -lm
+gcc -c -g heat2D-omp.c -Wall -fopenmp -D_USE_OMP=1 -lm
+gcc -g -o heat2D-omp utils.o heat2D-omp.o -Wall -fopenmp -D_USE_OMP=1 -lm
+
+  PARALLEL
+ ======================================== 
+ * Active th : [32]	 * IMAX: 512	*
+ * Cancell   : [1]	 * JMAX: 512	*
+ * 			 * NREP: 10	*
+ ======================================== 
+ repetition: 0  1  2  3  4  5  6  7  8  9  
+
+  >>> Computation time mean :2.26645379
+  >>> Exit with no error,experiment succesful 
+

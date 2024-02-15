@@ -1,0 +1,8 @@
+export OMP_CANCELLATION=true
+gcc -c -g utils.c -lm
+gcc -c -g heat2D-serial.c -Wall -lm
+gcc -g -o heat2D-serial utils.o heat2D-serial.o -Wall -lm
+ Serial 
+Final time output: 42.144848
+n = 13188
+Exit with no error,experiment succesful 

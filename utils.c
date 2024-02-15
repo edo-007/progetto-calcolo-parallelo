@@ -23,29 +23,45 @@ char* trim(char *s) {
     return s;
 }
 
+float **allocateMatrix() {
 
-void initConditions( float **mat, float *x, float xD){
-    int i,j;
-    for (i = 0; i < IMAX; i++){
-        for (j = 0; j < JMAX; j++){
-                if ( x[i] < xD )
-                    mat[i][j] = TL;
-                else
-                    mat[i][j] = TR;    
-        }
+    float **matrix = malloc(IMAX * sizeof(float*));
+
+    int i;
+    for(i = 0; i < IMAX; i++) {
+        matrix[i] = malloc(JMAX*  sizeof(int));
     }
+
+    return matrix;
 }
 
-void initConditionsLinear( float *mat, float *x, float xD){
+float **allocateMatrix_MPI(int total_x, int total_y) {
+
+    float **matrix = malloc(total_x * sizeof(float*));
+
+    int i;
+    for(i = 0; i < total_x; i++) {
+        matrix[i] = malloc(total_y*  sizeof(int));
+    }
+
+    return matrix;
+}
+
+void initConditions( float **Tn,float **Tn1, float **Te, float *x, float xD,float *time){
     int i,j;
     for (i = 0; i < IMAX; i++){
         for (j = 0; j < JMAX; j++){
+                // printf("(%d, %d) ", i,j);
                 if ( x[i] < xD )
-                    mat[i*JMAX + j] = TL;
+                    Tn[i][j] = TL;
                 else
-                    mat[i*JMAX + j] = TR;    
+                    Tn[i][j] = TR;    
+                
+                Tn1[i][j] = 0.0;
         }
+        // puts("");
     }
+    *time = (float)0;
 }
 
 void compExactSolution(float **Te, float *x, float kappa, float time){
@@ -67,7 +83,7 @@ void DataOutput(  char testname[200], int timestep, float time, float* x, float*
     FILE *fp;
 
     trim(testname);
-    sprintf(IOFilename, "%s/%s-%04d.dat", DAT_PATH, testname, timestep);
+    sprintf(IOFilename, "%s/%s-%04d.csv", DAT_PATH, testname, timestep);
 
     if ( ( fp = fopen( IOFilename, "w+t") ) == NULL ) {
         /* Errore nell' apertura del file */
@@ -105,15 +121,6 @@ void Time_Output( float elapsed_time ) {
     fclose(fp);
 }
 
-void allocRows(float **Tn, float** Tn1, float **Te){
-    int i;
-    for (i = 0; i < IMAX; i++) {
-        Tn [i] = (float*)malloc(JMAX * sizeof(float));
-        Tn1[i] = (float*)malloc(JMAX * sizeof(float));
-        Te [i] = (float*)malloc(JMAX * sizeof(float));
-    }
-
-}
 
 void sub_timespec ( struct timespec t1, struct timespec t2, struct timespec *td) {
 
@@ -135,8 +142,8 @@ double simple_sub_timespec ( struct timespec t1 , struct timespec t2 ) {
 
 	double td1, td2 ;
 
-	td1 = t1 . tv_sec + ( t1 . tv_nsec /( double ) NS_PER_SECOND ) ;
-	td2 = t2 . tv_sec + ( t2 . tv_nsec /( double ) NS_PER_SECOND ) ;
+	td1 = t1.tv_sec + ( t1.tv_nsec /( double ) NS_PER_SECOND ) ;
+	td2 = t2.tv_sec + ( t2.tv_nsec /( double ) NS_PER_SECOND ) ;
 
 	return ( td2 - td1 ) ;
 }
@@ -152,3 +159,4 @@ void print_tn(float **mat){
     }
     
 }
+

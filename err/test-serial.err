@@ -1,0 +1,13 @@
+heat2D-serial.c: In function ‘main’:
+heat2D-serial.c:29:16: warning: variable ‘dtio’ set but not used [-Wunused-but-set-variable]
+   29 |     float tio, dtio;                                //output time step
+      |                ^~~~
+heat2D-serial.c:29:11: warning: variable ‘tio’ set but not used [-Wunused-but-set-variable]
+   29 |     float tio, dtio;                                //output time step
+      |           ^~~
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+srun: got SIGCONT
+slurmstepd: error: *** JOB 2099862 ON node06 CANCELLED AT 2024-01-08T17:31:40 ***
+srun: forcing job termination
+slurmstepd: error: *** STEP 2099862.0 ON node06 CANCELLED AT 2024-01-08T17:31:40 ***
+srun: error: node06: task 0: Terminated
